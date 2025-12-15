@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Gestión de Pacientes</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <nav class="navbar">
+    <div class="navbar-brand">🏥 Rehabilitación Física</div>
+    <div class="navbar-links">
+      <a href="index.html">Inicio</a>
+      <a href="login.html">Cerrar Sesión</a>
+    </div>
+  </nav>
+
+  <main style="padding:20px;">
+    <h1>Gestión de Pacientes</h1>
+
+    <div class="botonera-grid">
+        <button class="btn btn-icon" onclick="location.href='pacientes-nuevo.html'">➕ Añadir paciente</button>
+        <button class="btn btn-icon" onclick="location.href='pacientes-mostrar.html'">📋 Ver lista de pacientes</button>
+    </div>
+
+    <footer>
+        <button id="btnVolver" class="btn" onclick="location.href='index.html'">⬅ Volver al Inicio</button>
+   </footer>
+
+
+    <!-- Formulario para añadir paciente -->
+    <div id="formPaciente" style="display:none; margin-top:20px;">
+      <h2>Añadir nuevo paciente</h2>
+      <form id="formPacientes">
+        <label>Nombre:</label><br>
+        <input type="text" id="nombre" required><br><br>
+
+        <label>Edad:</label><br>
+        <input type="number" id="edad" required><br><br>
+
+        <label>Lesión:</label><br>
+        <input type="text" id="lesion" required><br><br>
+
+        <label>Estado de salud:</label><br>
+        <input type="text" id="estado" required><br><br>
+
+        <label>Fecha de registro:</label><br>
+        <input type="date" id="fecha" required><br><br>
+
+        <button type="submit">Guardar</button>
+      </form>
+    </div>
+
+    <!-- Tabla de pacientes -->
+    <div id="tablaPacientes" style="display:none; margin-top:20px;">
+      <h2>Lista de pacientes</h2>
+      <table border="1" width="100%">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Nombre</th>
+            <th>Edad</th>
+            <th>Lesión</th>
+            <th>Estado</th>
+            <th>Fecha de registro</th>
+          </tr>
+        </thead>
+        <tbody id="tablaBodyPacientes"></tbody>
+      </table>
+    </div>
+  </main>
+
+  <script>
+    // Botones
+    document.getElementById('btnNuevoPaciente').addEventListener('click', () => {
+      document.getElementById('formPaciente').style.display = 'block';
+      document.getElementById('tablaPacientes').style.display = 'none';
+    });
+
+    document.getElementById('btnListaPacientes').addEventListener('click', async () => {
+      document.getElementById('formPaciente').style.display = 'none';
+      document.getElementById('tablaPacientes').style.display = 'block';
+      cargarPacientes();
+    });
+
+    // Guardar paciente
+    document.getElementById('formPacientes').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const nombre = document.getElementById('nombre').value;
+      const edad = document.getElementById('edad').value;
+      const lesion = document.getElementById('lesion').value;
+      const estado = document.getElementById('estado').value;
+      const fecha = document.getElementById('fecha').value;
+
+      const res = await fetch('/pacientes', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ nombre, edad, lesion, estado_salud: estado, fecha_registro: fecha })
+      });
+
+      const data = await res.json();
+      alert(data.mensaje || 'Paciente agregado');
+      document.getElementById('formPacientes').reset();
+    });
+
+    // Cargar tabla de pacientes
+    async function cargarPacientes() {
+      const res = await fetch('/pacientes');
+      const pacientes = await res.json();
+      const tbody = document.getElementById('tablaBodyPacientes');
+      tbody.innerHTML = '';
+
+      pacientes.forEach(p => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${p.id_paciente}</td>
+          <td>${p.nombre}</td>
+          <td>${p.edad}</td>
+          <td>${p.lesion}</td>
+          <td>${p.estado_salud}</td>
+          <td>${p.fecha_registro}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    // Control de roles
+    window.onload = async () => {
+      const res = await fetch('/session');
+      const data = await res.json();
+
+      if (data.success) {
+        const rol = data.usuario.rol;
+        if (rol === "paciente") {
+          // 🔒 Paciente no puede ver esta sección
+          document.querySelector('.botonera-grid').style.display = "none";
+          document.getElementById('formPaciente').style.display = "none";
+          document.getElementById('tablaPacientes').style.display = "none";
+        }
+      }
+    };
+  </script>
+</body>
+</html>

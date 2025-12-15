@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Añadir Paciente</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <nav class="navbar">
+    <div class="navbar-brand">🏥 Rehabilitación Física</div>
+    <div class="navbar-links">
+      <a href="index.html">Inicio</a>
+      <a href="login.html">Cerrar Sesión</a>
+    </div>
+  </nav>
+
+  <main style="padding:20px;">
+    <h1>Añadir nuevo paciente</h1>
+    <form id="formPacientes">
+      <label>Nombre:</label><br>
+      <input type="text" id="nombre" required><br><br>
+
+      <label>Edad:</label><br>
+      <input type="number" id="edad" required><br><br>
+
+      <label>Lesión:</label><br>
+      <input type="text" id="lesion" required><br><br>
+
+      <label>Estado de salud:</label><br>
+      <input type="text" id="estado" required><br><br>
+
+      <label>Fecha de registro:</label><br>
+      <input type="date" id="fecha" required><br><br>
+
+      <button type="submit">Guardar</button>
+    </form>
+    <!-- Botón volver -->
+    <button onclick="location.href='pacientes.html'" style="margin-top:20px;">⬅ Volver</button>
+  </main>
+
+  <!-- Mensaje flotante -->
+    <div id="mensajeFlotante" 
+       style="display:none; 
+              position:fixed; 
+              top:50%; 
+              left:50%; 
+              transform:translate(-50%, -50%); 
+              padding:20px 30px; 
+              border-radius:8px; 
+              box-shadow:0 4px 6px rgba(0,0,0,0.2); 
+              font-weight:bold; 
+              background:#4caf50; 
+              color:white; 
+              z-index:999;">
+  </div>
+
+
+  <script>
+  document.getElementById('formPacientes').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const nombre = document.getElementById('nombre').value;
+    const edad = document.getElementById('edad').value;
+    const lesion = document.getElementById('lesion').value;
+    const estado = document.getElementById('estado').value;
+    const fecha = document.getElementById('fecha').value;
+
+    const res = await fetch('/pacientes', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ nombre, edad, lesion, estado_salud: estado, fecha_registro: fecha })
+    });
+
+    const data = await res.json();
+
+    // Mostrar mensaje flotante
+    const mensaje = document.getElementById('mensajeFlotante');
+    mensaje.textContent = data.mensaje || 'Paciente agregado correctamente';
+    mensaje.style.display = 'block';
+
+    // Ocultar después de 3 segundos
+    setTimeout(() => {
+      mensaje.style.display = 'none';
+    }, 3000);
+
+    // Resetear formulario
+    document.getElementById('formPacientes').reset();
+  });
+  </script>
+
+</body>
+</html>

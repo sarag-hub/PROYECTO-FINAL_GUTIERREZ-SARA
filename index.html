@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Plataforma de Rehabilitación Física</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- Navbar fijo arriba -->
+  <nav class="navbar">
+    <div class="navbar-brand">🏥 Rehabilitación Física</div>
+    <div class="navbar-links">
+        <a id="navInicio" href="index.html">Inicio</a>
+        <a id="navUsuarios" href="usuarios-editar.html">Gestionar Usuarios</a>
+        <a id="navPacientes" href="pacientes-editar.html">Editar Pacientes</a>
+        <a id="navCerrar" href="login.html">Cerrar Sesión</a>
+    </div>
+  </nav>
+
+
+  <!-- Encabezado -->
+  <header>
+    <h1>Bienvenido a la Plataforma de Rehabilitación Física</h1>
+    <p>Consulta y gestiona usuarios, pacientes y ejercicios</p>
+  </header>
+
+  <!-- 🔹 Sección informativa solo para pacientes -->
+  <section id="infoRehabilitacion" style="display:none; margin-top:40px; padding:20px; background:#f1f8e9; border-radius:10px;">
+  <div style="display:flex; flex-wrap:wrap; align-items:center; gap:30px;">
+    <!-- 🟩 Texto + título -->
+    <div style="flex:1; min-width:250px;">
+      <h2 style="margin-bottom:15px;">La importancia de la rehabilitación física</h2>
+      <p>
+        La rehabilitación es fundamental para recuperar movilidad, fuerza y calidad de vida después de una lesión o enfermedad.
+        A través de ejercicios guiados y constancia, los pacientes pueden mejorar su independencia, prevenir complicaciones y acelerar su recuperación.
+      </p>
+      <p>
+        Recuerda que tu esfuerzo diario es clave para lograr un progreso sostenido. ¡Cada ejercicio cuenta!
+      </p>
+    </div>
+
+    <!-- 🖼 Imagen -->
+    <div style="flex:1; min-width:250px;">
+      <img src="imagen.jpg" alt="Paciente en rehabilitación" style="width:100%; border-radius:10px;">
+    </div>
+  </div>
+  </section>
+
+
+
+
+  <!-- Botones distribuidos en dos filas -->
+  <main>
+    <div class="botonera-grid">
+        <button id="btnUsuarios" class="btn btn-icon" onclick="location.href='usuarios.html'">👤 Usuarios</button>
+        <button id="btnPacientes" class="btn btn-icon" onclick="location.href='pacientes.html'">🧑‍⚕️ Pacientes</button>
+        <button id="btnEjercicios" class="btn btn-icon" onclick="location.href='ejercicios.html'">💪 Ejercicios</button>
+        <button id="btnRegistro" class="btn btn-icon" onclick="location.href='registro.html'">📋 Registro</button>
+    </div>
+
+  </main>
+  <!-- Footer -->
+  <footer>
+    <p>Sara Gutiérrez Hernández © 2025 Plataforma de Rehabilitación Física</p>
+  </footer>
+</body>
+
+<script>
+  async function cargarRol() {
+    try {
+      // Pedimos al backend la sesión actual
+      const res = await fetch('/session');
+      const data = await res.json();
+
+      if (!data.success) {
+        // Si no hay sesión, ocultamos todo
+        document.querySelectorAll('.btn-icon').forEach(btn => btn.style.display = 'none');
+        return;
+      }
+
+      const rol = data.usuario.rol;
+
+      // Ocultar todos primero
+      document.querySelectorAll('.btn-icon').forEach(btn => btn.style.display = 'none');
+
+      // Mostrar según rol
+      if (rol === 'admin') {
+        document.getElementById('btnUsuarios').style.display = 'block';
+        document.getElementById('btnPacientes').style.display = 'block';
+        document.getElementById('btnEjercicios').style.display = 'block';
+        document.getElementById('btnRegistro').style.display = 'block';
+      } else if (rol === 'fisioterapeuta') {
+        document.getElementById('btnPacientes').style.display = 'block';
+        document.getElementById('btnEjercicios').style.display = 'block'; // 🔑 nuevo
+        document.getElementById('btnRegistro').style.display = 'block';
+      } else if (rol === 'paciente') {
+        document.getElementById('btnEjercicios').style.display = 'block';
+        document.getElementById('btnRegistro').style.display = 'block';
+      }
+    } catch (err) {
+      console.error('Error al cargar rol:', err);
+    }
+  }
+
+  // Ejecutar al cargar la página
+  cargarRol();
+</script>
+
+
+<script>
+  async function configurarNavbar() {
+    try {
+      const res = await fetch('/session');
+      const data = await res.json();
+
+      if (!data.success) {
+        // Si no hay sesión, ocultamos todo menos Inicio y Cerrar Sesión
+        document.getElementById('navUsuarios').style.display = 'none';
+        document.getElementById('navPacientes').style.display = 'none';
+        return;
+      }
+
+      const rol = data.usuario.rol;
+
+      // Ocultar todo primero
+      document.getElementById('navUsuarios').style.display = 'none';
+      document.getElementById('navPacientes').style.display = 'none';
+
+      // Mostrar según rol
+      if (rol === 'admin') {
+        document.getElementById('navUsuarios').style.display = 'inline-block';
+        document.getElementById('navPacientes').style.display = 'inline-block';
+      } else if (rol === 'fisioterapeuta') {
+        document.getElementById('navPacientes').style.display = 'inline-block';
+      } 
+      // Paciente solo ve Inicio y Cerrar Sesión
+    } catch (err) {
+      console.error('Error al configurar navbar:', err);
+    }
+  }
+
+  configurarNavbar();
+</script>
+
+<script>
+  async function configurarVista() {
+    try {
+      const res = await fetch('/session');
+      const data = await res.json();
+
+      if (!data.success) {
+        // Ocultar todo si no hay sesión
+        document.getElementById('infoRehabilitacion').style.display = 'none';
+        return;
+      }
+
+      const rol = data.usuario.rol;
+
+      // Mostrar sección solo si es paciente
+      if (rol === 'paciente') {
+        document.getElementById('infoRehabilitacion').style.display = 'block';
+      } else {
+        document.getElementById('infoRehabilitacion').style.display = 'none';
+      }
+    } catch (err) {
+      console.error('Error al configurar vista:', err);
+    }
+  }
+
+  configurarVista();
+</script>
+
+
+
+</html>

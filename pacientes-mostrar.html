@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Lista de Pacientes</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+
+<script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+<script src="server.js"></script>
+
+<script>
+function descargarExcel() {
+    const tabla = document.getElementById("tablaPacientes");
+
+    if (!tabla) {
+        alert("No se encontró la tabla");
+        return;
+    }
+
+    const libro = XLSX.utils.table_to_book(tabla, {
+        sheet: "Pacientes"
+    });
+
+    XLSX.writeFile(libro, "pacientes_registrados.xlsx");
+}
+</script>
+
+</body>
+</html>
+
+
+<body>
+  <nav class="navbar">
+    <div class="navbar-brand">🏥 Rehabilitación Física</div>
+    <div class="navbar-links">
+      <a href="index.html">Inicio</a>
+      <a href="login.html">Cerrar Sesión</a>
+    </div>
+  </nav>
+
+  <main style="padding:20px;">
+    <h1>Lista de pacientes</h1>
+   <button onclick="descargarExcel()">Descargar Excel</button>
+
+    <table id="tablaPacientes" border="1" width="100%">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Nombre</th>
+          <th>Edad</th>
+          <th>Lesión</th>
+          <th>Estado</th>
+          <th>Fecha de registro</th>
+        </tr>
+      </thead>
+      <tbody id="tablaBodyPacientes"></tbody>
+    </table>
+    <!-- Botón volver con id -->
+    <button id="btnVolver" onclick="location.href='pacientes.html'" style="margin-top:20px;">⬅ Volver</button>
+    
+
+  </main>
+
+  <script>
+    async function cargarPacientes() {
+      const res = await fetch('/pacientes');
+      const pacientes = await res.json();
+      const tbody = document.getElementById('tablaBodyPacientes');
+      tbody.innerHTML = '';
+
+      pacientes.forEach(p => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${p.id_paciente}</td>
+          <td>${p.nombre}</td>
+          <td>${p.edad}</td>
+          <td>${p.lesion}</td>
+          <td>${p.estado_salud}</td>
+          <td>${p.fecha_registro}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    cargarPacientes();
+  </script>
+
+</body>
+</html>

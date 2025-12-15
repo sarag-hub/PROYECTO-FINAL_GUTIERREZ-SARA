@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Registro de Usuario</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="form-container">
+    <h1>📝 Crear Cuenta</h1>
+    <form id="registerForm">
+        <input type="text" name="usuario" placeholder="Nombre de usuario" required>
+        <input type="email" name="correo" placeholder="Correo electrónico" required>
+        <input type="password" name="password" placeholder="Contraseña" required>
+        <input type="text" name="codigo_acceso" placeholder="Código de acceso" required>
+        <button type="submit" class="btn">Registrarse</button>
+    </form>
+    <p>¿Ya tienes cuenta? <a href="login.html">Inicia sesión aquí</a></p>
+  </div>
+
+  <script>
+  document.getElementById('registerForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    const data = Object.fromEntries(formData.entries());
+
+    const res = await fetch('/register', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    });
+
+    const result = await res.json();
+
+    if (result.success) {
+      mostrarMensaje("Registro exitoso. Ahora puedes iniciar sesión", "success");
+      setTimeout(() => window.location.href = 'login.html', 3000);
+    } else {
+      mostrarMensaje("Error al registrarse: " + (result.error || ""), "error");
+    }
+  });
+
+  function mostrarMensaje(texto, tipo="success") {
+    const mensaje = document.getElementById('mensajeFlotante');
+    mensaje.innerText = texto;
+    if (tipo === "success") mensaje.style.background = "#4caf50";
+    else if (tipo === "error") mensaje.style.background = "#f44336";
+    else mensaje.style.background = "#2196f3";
+
+    mensaje.style.display = "block";
+    setTimeout(() => {
+      mensaje.style.display = "none";
+    }, 3000);
+  }
+</script>
+
+  <!-- Ventana emergente -->
+    <div id="mensajeFlotante" 
+     style="display:none;
+            position:fixed;
+            top:50%;
+            left:50%;
+            transform:translate(-50%, -50%);
+            background:#4caf50;
+            color:white;
+            padding:20px 30px;
+            border-radius:8px;
+            box-shadow:0 4px 6px rgba(0,0,0,0.2);
+            font-weight:bold;
+            z-index:2000;">
+    </div>
+
+</body>
+</html>

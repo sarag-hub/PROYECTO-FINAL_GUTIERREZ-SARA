@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Añadir Ejercicio</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <nav class="navbar">
+    <div class="navbar-brand">🏥 Rehabilitación Física</div>
+    <div class="navbar-links">
+      <a href="index.html">Inicio</a>
+      <a href="login.html">Cerrar Sesión</a>
+    </div>
+  </nav>
+
+  <main style="padding:20px;">
+    <h1>Añadir nuevo ejercicio</h1>
+    <form id="formEjercicio">
+      <label>Nombre:</label><br>
+      <input type="text" id="nombre" required><br><br>
+
+      <label>Zona del cuerpo:</label><br>
+      <input type="text" id="zona" required><br><br>
+
+      <label>Descripción:</label><br>
+      <textarea id="descripcion" required></textarea><br><br>
+
+      <button type="submit">Guardar</button>
+    </form>
+    <!-- Botón volver -->
+    <button onclick="location.href='ejercicios.html'" style="margin-top:20px;">⬅ Volver</button>
+  </main>
+
+  <!-- Bloque del mensaje flotante -->
+  <div id="mensajeFlotante" 
+       style="display:none; 
+              position:fixed; 
+              top:50%; 
+              left:50%; 
+              transform:translate(-50%, -50%); 
+              padding:20px 30px; 
+              border-radius:8px; 
+              box-shadow:0 4px 6px rgba(0,0,0,0.2); 
+              font-weight:bold; 
+              background:#4caf50; 
+              color:white; 
+              z-index:999;">
+  </div>
+
+  <!-- Script del formulario -->
+  <script>
+    document.getElementById('formEjercicio').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const nombre = document.getElementById('nombre').value;
+      const zona = document.getElementById('zona').value;
+      const descripcion = document.getElementById('descripcion').value;
+
+      const res = await fetch('/ejercicios', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ nombre, zona_cuerpo: zona, descripcion })
+      });
+
+      const data = await res.json();
+
+      if (data.mensaje) {
+        mostrarMensaje("✅ Ejercicio guardado correctamente", "success");
+        document.getElementById('formEjercicio').reset(); // limpiar campos
+      } else {
+        mostrarMensaje("❌ Hubo un error al guardar el ejercicio", "error");
+      }
+    });
+  </script>
+
+  <!-- Script con la función mostrarMensaje -->
+  <script>
+    function mostrarMensaje(texto, tipo="success") {
+      const mensaje = document.getElementById('mensajeFlotante');
+      mensaje.innerText = texto;
+
+      // Colores según tipo
+      if (tipo === "success") {
+        mensaje.style.background = "#4caf50"; // verde
+      } else if (tipo === "error") {
+        mensaje.style.background = "#f44336"; // rojo
+      } else {
+        mensaje.style.background = "#2196f3"; // azul
+      }
+
+      mensaje.style.display = "block";
+
+      // Ocultar automáticamente después de 3 segundos
+      setTimeout(() => {
+        mensaje.style.display = "none";
+      }, 3000);
+    }
+  </script>
+</body>
+</html>

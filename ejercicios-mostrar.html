@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Mostrar Ejercicios</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+
+<script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+<script src="server.js"></script>
+
+<script>
+function descargarExcel() {
+  const tabla = document.getElementById("tablaEjercicios");
+
+  if (!tabla) {
+    alert("No se encontró la tabla");
+    return;
+  }
+
+  const libro = XLSX.utils.table_to_book(tabla, { sheet: "Ejercicios" });
+  XLSX.writeFile(libro, "ejercicios_registrados.xlsx");
+}
+
+</script>
+
+
+<body>
+  <nav class="navbar">
+    <div class="navbar-brand">🏥 Rehabilitación Física</div>
+    <div class="navbar-links">
+      <a href="index.html">Inicio</a>
+      <a href="login.html">Cerrar Sesión</a>
+    </div>
+  </nav>
+
+  <main style="padding:20px;">
+    <h1>Tabla de ejercicios</h1>
+    <button onclick="descargarExcel()">Descargar Excel</button>
+
+    <table id="tablaEjercicios" border="1" width="100%">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Nombre</th>
+          <th>Zona</th>
+          <th>Descripción</th>
+        </tr>
+      </thead>
+      <tbody id="tablaBody"></tbody>
+    </table>
+    <!-- Botón volver con id -->
+    <button id="btnVolver" onclick="location.href='ejercicios.html'" style="margin-top:20px;">⬅ Volver</button>
+  </main>
+
+  <script>
+    async function cargarTabla() {
+      const res = await fetch('/ejercicios');
+      const ejercicios = await res.json();
+      const tbody = document.getElementById('tablaBody');
+      tbody.innerHTML = '';
+
+      ejercicios.forEach(ej => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${ej.id_ejercicio}</td>
+          <td>${ej.nombre}</td>
+          <td>${ej.zona_cuerpo}</td>
+          <td>${ej.descripcion}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    cargarTabla();
+
+    // 🔑 Ocultar botón "Volver" si el rol es paciente
+    window.onload = async () => {
+      const res = await fetch('/session');
+      const data = await res.json();
+
+      if (data.success) {
+        const rol = data.usuario.rol;
+        if (rol === "paciente") {
+          document.getElementById('btnVolver').style.display = "none";
+        }
+      }
+    };
+  </script>
+</body>
+</html>

@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Gestión de Ejercicios</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <nav class="navbar">
+    <div class="navbar-brand">🏥 Rehabilitación Física</div>
+    <div class="navbar-links">
+      <a href="index.html">Inicio</a>
+      <a href="login.html">Cerrar Sesión</a>
+    </div>
+  </nav>
+
+  <main style="padding:20px;">
+    <h1>Gestión de Ejercicios</h1>
+
+    <div class="botonera-grid">
+        <button id="btnNuevo" class="btn btn-icon" onclick="location.href='ejercicios-nuevo.html'">➕ Añadir nuevo ejercicio</button>
+        <button id="btnEditar" class="btn btn-icon" onclick="location.href='ejercicios-editar.html'">✏️ Editar tabla de ejercicios</button>
+        <button id="btnMostrar" class="btn btn-icon" onclick="location.href='ejercicios-mostrar.html'">📋 Mostrar tabla de ejercicios</button>
+        <button id="btnBuscar" class="btn btn-icon" onclick="location.href='ejercicios-busqueda.html'">🔍 Búsqueda de ejercicio</button>
+    </div>
+
+
+   <footer>
+        <button id="btnVolver" class="btn" onclick="location.href='index.html'">⬅ Volver al Inicio</button>
+   </footer>
+
+
+    <!-- Formulario para añadir nuevo ejercicio -->
+    <div id="formNuevo" style="display:none; margin-top:20px;">
+      <h2>Añadir nuevo ejercicio</h2>
+      <form id="formEjercicio">
+        <label>Nombre:</label><br>
+        <input type="text" id="nombre" required><br><br>
+
+        <label>Zona del cuerpo:</label><br>
+        <input type="text" id="zona" required><br><br>
+
+        <label>Descripción:</label><br>
+        <textarea id="descripcion" required></textarea><br><br>
+
+        <button type="submit">Guardar</button>
+      </form>
+    </div>
+
+    <!-- Tabla de ejercicios -->
+    <div id="tablaEjercicios" style="display:none; margin-top:20px;">
+      <h2>Tabla de ejercicios</h2>
+      <table border="1" width="100%">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Nombre</th>
+            <th>Zona</th>
+            <th>Descripción</th>
+          </tr>
+        </thead>
+        <tbody id="tablaBody"></tbody>
+      </table>
+    </div>
+  </main>
+
+  <script>
+    // Botones
+    document.getElementById('btnNuevo').addEventListener('click', () => {
+      document.getElementById('formNuevo').style.display = 'block';
+      document.getElementById('tablaEjercicios').style.display = 'none';
+    });
+
+    document.getElementById('btnEditar').addEventListener('click', async () => {
+      document.getElementById('formNuevo').style.display = 'none';
+      document.getElementById('tablaEjercicios').style.display = 'block';
+      cargarTabla(true); // con botones de editar/eliminar
+    });
+
+    document.getElementById('btnMostrar').addEventListener('click', async () => {
+      document.getElementById('formNuevo').style.display = 'none';
+      document.getElementById('tablaEjercicios').style.display = 'block';
+      cargarTabla(false); // solo mostrar
+    });
+
+    // Guardar nuevo ejercicio
+    document.getElementById('formEjercicio').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const nombre = document.getElementById('nombre').value;
+      const zona = document.getElementById('zona').value;
+      const descripcion = document.getElementById('descripcion').value;
+
+      const res = await fetch('/ejercicios', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ nombre, zona_cuerpo: zona, descripcion })
+      });
+
+      const data = await res.json();
+      alert(data.mensaje || 'Ejercicio agregado');
+      document.getElementById('formEjercicio').reset();
+    });
+
+    // Cargar tabla
+    async function cargarTabla(editable) {
+      const res = await fetch('/ejercicios');
+      const ejercicios = await res.json();
+      const tbody = document.getElementById('tablaBody');
+      tbody.innerHTML = '';
+
+      ejercicios.forEach(ej => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${ej.id_ejercicio}</td>
+          <td>${ej.nombre}</td>
+          <td>${ej.zona_cuerpo}</td>
+          <td>${ej.descripcion}</td>
+          <td>
+            ${editable ? `
+              <button onclick="eliminarEjercicio(${ej.id_ejercicio})">Eliminar</button>
+              <button onclick="editarEjercicio(${ej.id_ejercicio})">Editar</button>
+            ` : ''}
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    // Eliminar ejercicio
+    async function eliminarEjercicio(id) {
+      if (confirm('¿Seguro que deseas eliminar este ejercicio?')) {
+        await fetch('/ejercicios/' + id, { method: 'DELETE' });
+        cargarTabla(true);
+      }
+    }
+
+    // Editar ejercicio (ejemplo simple)
+    async function editarEjercicio(id) {
+      const nuevoNombre = prompt('Nuevo nombre:');
+      const nuevaZona = prompt('Nueva zona del cuerpo:');
+      const nuevaDescripcion = prompt('Nueva descripción:');
+
+      await fetch('/ejercicios/' + id, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ nombre: nuevoNombre, zona_cuerpo: nuevaZona, descripcion: nuevaDescripcion })
+      });
+
+      cargarTabla(true);
+    }
+
+    // Al cargar la página, consultamos el rol
+  window.onload = async () => {
+  const res = await fetch('/session');
+  const data = await res.json();
+
+  if (data.success) {
+    const rol = data.usuario.rol;
+
+    if (rol === "paciente") {
+      // Ocultar botones de añadir y editar
+      document.getElementById('btnNuevo').style.display = "none";
+      document.getElementById('btnEditar').style.display = "none";
+
+      // Mostrar directamente la tabla en modo lectura
+      document.getElementById('btnMostrar').click();
+
+      // Ocultar el botón de volver
+      document.getElementById('btnVolver').style.display = "none";
+    } else if (rol === "fisioterapeuta" || rol === "admin") {
+      // 🔑 Mostrar todas las opciones de ejercicios
+      document.getElementById('btnNuevo').style.display = "inline-block";
+      document.getElementById('btnEditar').style.display = "inline-block";
+      document.getElementById('btnBuscar').style.display = "inline-block";
+      document.getElementById('btnMostrar').style.display = "inline-block";
+      document.getElementById('btnVolver').style.display = "inline-block";
+    }
+  }
+};
+
+
+  </script>
+</body>
+</html>

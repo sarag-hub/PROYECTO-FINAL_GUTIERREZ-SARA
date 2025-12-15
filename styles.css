@@ -1,0 +1,224 @@
+/* ===== Estilos generales ===== */
+body {
+  font-family: 'Segoe UI', Arial, sans-serif;
+  margin: 0;
+  background: #e8f5e9; /* verde menta suave */
+  color: #2e7d32;
+}
+
+/* ===== Encabezado ===== */
+header {
+  background: #2e7d32; /* verde intenso */
+  color: white;
+  text-align: center;
+  padding: 20px;
+}
+
+header h1 {
+  margin: 0;
+}
+
+header p {
+  margin: 5px 0 0;
+}
+
+/* ===== Contenido principal ===== */
+main {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* ===== Botonera centrada ===== */
+.botonera {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 15px;
+  margin: 30px 0;
+}
+
+/* ===== Botones ===== */
+.btn {
+  background: #43a047; /* verde medio */
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  font-size: 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.btn:hover {
+  background: #388e3c; /* verde oscuro */
+}
+
+/* ===== Tablas ===== */
+table {
+  border-collapse: collapse;
+  width: 100%;
+  margin-top: 15px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+th, td {
+  border: 1px solid #c8e6c9;
+  padding: 10px;
+  text-align: left;
+}
+
+th {
+  background: #a5d6a7;
+  font-weight: bold;
+}
+
+tr:nth-child(even) {
+  background: #f1f8e9; /* verde claro */
+}
+
+.tabla-container {
+  margin-top: 10px;
+  width: 100%;
+  max-width: 1000px;
+}
+
+/* ===== Formularios (login y registro) ===== */
+.form-container {
+  max-width: 400px;
+  margin: 80px auto;
+  padding: 20px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  text-align: center;
+}
+
+.form-container h1 {
+  margin-bottom: 20px;
+  color: #2e7d32;
+}
+
+.form-container input {
+  width: 100%;
+  padding: 10px;
+  margin: 10px 0;
+  border: 1px solid #c8e6c9;
+  border-radius: 6px;
+}
+
+.form-container .btn {
+  width: 100%;
+  padding: 12px;
+  background: #43a047;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.form-container .btn:hover {
+  background: #388e3c;
+}
+
+.form-container p {
+  margin-top: 15px;
+}
+
+/* ===== Footer ===== */
+footer {
+  background: #1b5e20; /* verde profundo */
+  color: white;
+  text-align: center;
+  padding: 15px;
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+}
+
+/* ===== Navbar fijo arriba ===== */
+.navbar {
+  background-color: #1b5e20;
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 20px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1000;
+}
+
+body {
+  margin: 0;
+  padding-top: 60px;
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+
+.navbar-brand {
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.navbar-links a {
+  color: white;
+  margin-left: 20px;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.3s ease;
+}
+
+.navbar-links a:hover {
+  color: #a5d6a7;
+}
+
+/* ===== Encabezado ===== */
+header {
+  text-align: center;
+  padding: 20px;
+}
+
+/* ===== Botones grandes en dos filas ===== */
+.botonera-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(200px, 1fr));
+  gap: 30px;
+  justify-content: center;
+  margin: 40px auto;
+  max-width: 600px;
+}
+
+.btn-icon {
+  background: #43a047;
+  color: white;
+  border: none;
+  padding: 20px;
+  font-size: 20px;
+  border-radius: 10px;
+  cursor: pointer;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  transition: background 0.3s ease, transform 0.2s ease;
+}
+
+.btn-icon:hover {
+  background: #388e3c;
+  transform: translateY(-2px);
+}
+
+/* ===== Footer ===== */
+footer {
+  background: #1b5e20;
+  color: white;
+  text-align: center;
+  padding: 15px;
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+}
+
+

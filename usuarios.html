@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Usuarios</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header>
+    <h1>👤 Lista de Usuarios</h1>
+  </header>
+
+  <main>
+    <div id="usuarios" class="tabla-container"></div>
+  </main>
+
+  <footer>
+    <button class="btn" onclick="location.href='index.html'">⬅ Volver al Inicio</button>
+  </footer>
+
+  <script>
+    async function cargarUsuarios() {
+      const res = await fetch('/usuarios');
+      const data = await res.json();
+      mostrarTabla(data, 'usuarios', ['id_usuario','nombre','correo','rol','codigo_acceso']);
+    }
+
+    function mostrarTabla(data, divId, columnas) {
+      let html = "<table><tr>";
+      columnas.forEach(col => html += `<th>${col}</th>`);
+      html += "</tr>";
+      data.forEach(row => {
+        html += "<tr>";
+        columnas.forEach(col => html += `<td>${row[col]}</td>`);
+        html += "</tr>";
+      });
+      html += "</table>";
+      document.getElementById(divId).innerHTML = html;
+    }
+
+    cargarUsuarios();
+  </script>
+</body>
+</html>
